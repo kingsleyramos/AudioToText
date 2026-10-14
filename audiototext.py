@@ -72,9 +72,12 @@ if not args.skip_install:
   PIP = f'"{sys.executable}" -m pip' # the pip of this python
   PIP_USER = '' if sys.prefix != sys.base_prefix else ' --user' # not in a virtual environment
   MLX_WHISPER = ' mlx-whisper~=0.4.3' if APPLE_SILICON else ''
+  # Intel Mac: the last releases with macOS x86_64 wheels (PyTorch 2.2.2 needs NumPy 1.x)
+  INTEL_MAC = sys_platform == 'darwin' and machine() == 'x86_64'
+  TORCH = 'torch==2.2.2 numpy~=1.26.4 numba~=0.62.1 llvmlite~=0.45.1' if INTEL_MAC else 'torch~=2.11.0 numpy~=2.0.2'
 
   os.system(f"{PIP} install --no-warn-script-location{PIP_USER} --upgrade pip")
-  os.system(f"{PIP} install --root-user-action=ignore git+https://github.com/openai/whisper.git@v20250625 openai~=2.43.0 numpy~=2.0.2 scipy~=1.16.3 deepl~=1.30.0 pydub~=0.25.1 cohere~=7.0.4 ffmpeg-python~=0.2.0 torch~=2.11.0 tensorflow-probability~=0.25.0 typing-extensions~=4.15.0 requests~=2.32.4{MLX_WHISPER}")
+  os.system(f"{PIP} install --root-user-action=ignore git+https://github.com/openai/whisper.git@v20250625 openai~=2.43.0 {TORCH} scipy~=1.16.3 deepl~=1.30.0 pydub~=0.25.1 cohere~=7.0.4 ffmpeg-python~=0.2.0 tensorflow-probability~=0.25.0 typing-extensions~=4.15.0 requests~=2.32.4{MLX_WHISPER}")
   print()
 
 """## [Step 2] 📁 Upload your audio files to this folder
